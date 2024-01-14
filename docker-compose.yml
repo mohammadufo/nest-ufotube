@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  postgres:
+    platform: linux/x86_64
+    image: postgres:13.1
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: 1400
+    ports:
+      - 5432:5432
+
+  adminer:
+    platform: linux/x86_64
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
