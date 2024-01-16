@@ -13,4 +13,7 @@ export class CreateVideoDto {
 
   @IsString()
   imageUrl: string;
+
+  @IsString()
+  userId: string;
 }

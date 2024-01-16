@@ -1,6 +1,7 @@
 import { IsString } from 'class-validator';
 import { BaseEntity } from 'src/shared/database/base.entity';
-import { Entity, Column } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { User } from '../user/user.entity';
 
 @Entity()
 export class Video extends BaseEntity {
@@ -19,4 +20,12 @@ export class Video extends BaseEntity {
   @Column()
   @IsString()
   videoUrl: string;
+
+  @ManyToOne(() => User, (user) => user.videos)
+  @JoinColumn({ name: 'userId' })
+  user: User;
+
+  @Column()
+  @IsString()
+  userId: string;
 }

@@ -5,13 +5,20 @@ import { Video } from './video.entity';
 import { CreateVideoDto } from './dto/create-video.dto';
 import { FindAllDto } from './dto/find-all.dto';
 import { PaginationDto } from 'src/shared/dtos/pagination.dto';
+import { User } from '../user/user.entity';
 
 @Injectable()
 export class VideoService {
-  constructor(@InjectRepository(Video) private videoRepo: Repository<Video>) {}
+  constructor(
+    @InjectRepository(Video) private videoRepo: Repository<Video>,
+    @InjectRepository(User) private userRepo: Repository<User>,
+  ) {}
 
   async create(body: CreateVideoDto) {
     const video = this.videoRepo.create(body);
+
+    const user = await this.userRepo.findOneBy({ id: body?.userId });
+    video.user = user;
 
     return await this.videoRepo.save(video);
   }
@@ -33,10 +40,21 @@ export class VideoService {
       options.take = size;
     }
 
+    if (query?.orderByNewest) {
+      options.order = {
+        created_at: 'DESC',
+      };
+    }
+
     return this.videoRepo.findAndCount(options);
   }
 
   async findById(id: string) {
-    return this.videoRepo.findOneBy({ id });
+    return this.videoRepo.findOne({
+      where: { id },
+      relations: {
+        user: true,
+      },
+    });
   }
 }
