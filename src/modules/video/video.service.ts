@@ -4,6 +4,7 @@ import { Repository, Like, FindManyOptions } from 'typeorm';
 import { Video } from './video.entity';
 import { CreateVideoDto } from './dto/create-video.dto';
 import { FindAllDto } from './dto/find-all.dto';
+import { PaginationDto } from 'src/shared/dtos/pagination.dto';
 
 @Injectable()
 export class VideoService {
@@ -15,7 +16,7 @@ export class VideoService {
     return await this.videoRepo.save(video);
   }
 
-  async findAll(query: FindAllDto) {
+  async findAll(pagination: PaginationDto, query: FindAllDto) {
     const options: FindManyOptions<Video> = {};
 
     if (query?.term) {
@@ -24,15 +25,15 @@ export class VideoService {
       };
     }
 
-    if (query.page && query?.size) {
-      const page = query.page || 0;
-      const size = query.size || 100;
+    if (pagination.page && pagination?.size) {
+      const page = pagination.page || 1;
+      const size = pagination.size || 20;
 
-      options.skip = page * size;
+      options.skip = (page - 1) * size;
       options.take = size;
     }
 
-    return this.videoRepo.find(options);
+    return this.videoRepo.findAndCount(options);
   }
 
   async findById(id: string) {
