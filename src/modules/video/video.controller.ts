@@ -5,6 +5,7 @@ import {
   Param,
   Post,
   Query,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { VideoService } from './video.service';
@@ -13,6 +14,9 @@ import { FindAllDto } from './dto/find-all.dto';
 import { PaginateInterceptor } from 'src/shared/interseptors/paginate.interseptor';
 import { QueryPagination } from 'src/shared/decorators/query-pagination.decorator';
 import { PaginationDto } from 'src/shared/dtos/pagination.dto';
+import { JwtAuthGuard } from 'src/shared/guards/jwt.guard';
+import { CurrentUser } from 'src/shared/decorators/current-user.decorator';
+import { User } from '../user/user.entity';
 
 @Controller('video')
 export class VideoController {
@@ -28,8 +32,9 @@ export class VideoController {
   }
 
   @Post()
-  createVideo(@Body() body: CreateVideoDto) {
-    return this.videoService.create(body);
+  @UseGuards(JwtAuthGuard)
+  createVideo(@Body() body: CreateVideoDto, @CurrentUser() user: User) {
+    return this.videoService.create(body, user);
   }
 
   @Get(':id')

@@ -14,10 +14,8 @@ export class VideoService {
     @InjectRepository(User) private userRepo: Repository<User>,
   ) {}
 
-  async create(body: CreateVideoDto) {
+  async create(body: CreateVideoDto, user: User) {
     const video = this.videoRepo.create(body);
-
-    const user = await this.userRepo.findOneBy({ id: body?.userId });
     video.user = user;
 
     return await this.videoRepo.save(video);
