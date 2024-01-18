@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import ormConfig from './config/orm.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './modules/user/user.module';
+import { CommentModule } from './modules/comment/comment.module';
 import ormConfigProd from './config/orm.config.prod';
 
 @Module({
@@ -21,6 +22,7 @@ import ormConfigProd from './config/orm.config.prod';
     }),
     VideoModule,
     UserModule,
+    CommentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

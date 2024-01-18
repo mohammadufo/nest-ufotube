@@ -1,7 +1,8 @@
-import { IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 import { BaseEntity } from 'src/shared/database/base.entity';
-import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { User } from '../user/user.entity';
+import { Comment } from '../comment/comment.entity';
 
 @Entity()
 export class Video extends BaseEntity {
@@ -27,5 +28,11 @@ export class Video extends BaseEntity {
 
   @Column()
   @IsString()
+  @IsNotEmpty()
   userId: string;
+
+  @OneToMany(() => Comment, (comment) => comment.video, {
+    nullable: true,
+  })
+  comments: Comment[];
 }

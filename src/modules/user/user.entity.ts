@@ -2,6 +2,7 @@ import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { BaseEntity } from 'src/shared/database/base.entity';
 import { Column, Entity, OneToMany } from 'typeorm';
 import { Video } from '../video/video.entity';
+import { Comment } from '../comment/comment.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -30,4 +31,9 @@ export class User extends BaseEntity {
     nullable: true,
   })
   videos: Video[];
+
+  @OneToMany(() => Comment, (comment) => comment.author, {
+    nullable: true,
+  })
+  comments: Comment[];
 }
