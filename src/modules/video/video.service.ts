@@ -44,6 +44,10 @@ export class VideoService {
       };
     }
 
+    options.relations = {
+      user: true,
+    };
+
     return this.videoRepo.findAndCount(options);
   }
 
@@ -52,6 +56,7 @@ export class VideoService {
       where: { id },
       relations: {
         user: true,
+        comments: true,
       },
     });
   }
