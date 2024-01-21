@@ -1,6 +1,6 @@
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { BaseEntity } from 'src/shared/database/base.entity';
-import { Column, Entity, OneToMany } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 import { Video } from '../video/video.entity';
 import { Comment } from '../comment/comment.entity';
 
@@ -36,4 +36,15 @@ export class User extends BaseEntity {
     nullable: true,
   })
   comments: Comment[];
+
+  @ManyToMany(() => User, (user) => user.following, {
+    nullable: true,
+  })
+  @JoinTable()
+  followers: User[];
+
+  @ManyToMany(() => User, (user) => user.followers, {
+    nullable: true,
+  })
+  following: User[];
 }

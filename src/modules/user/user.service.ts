@@ -1,10 +1,15 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dtos/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { classToPlain } from 'class-transformer';
 
 @Injectable()
 export class UserService {
@@ -48,10 +53,42 @@ export class UserService {
   }
 
   async findAll() {
-    return this.userRepo.find();
+    return this.userRepo.find({
+      relations: {
+        followers: true,
+      },
+    });
   }
 
   async findById(id: string) {
-    return this.userRepo.findOneBy({ id });
+    return await this.userRepo.findOne({
+      where: { id },
+      relations: {
+        followers: true,
+      },
+    });
+
+    // return this.userRepo.findOne(id, {
+    //   relations: ['followers', 'following'],
+    // });
+  }
+
+  async subscribe(id: string, user: User) {
+    const channel = await this.userRepo.findOne({
+      where: { id },
+      relations: {
+        followers: true,
+      },
+    });
+
+    if (!channel) {
+      throw new NotFoundException('User Not Found!');
+    }
+
+    channel.followers = [...channel.followers, user];
+
+    const updatedChannel = await this.userRepo.save(channel);
+
+    return !!updatedChannel;
   }
 }
