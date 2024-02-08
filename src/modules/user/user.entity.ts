@@ -3,6 +3,7 @@ import { BaseEntity } from 'src/shared/database/base.entity';
 import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 import { Video } from '../video/video.entity';
 import { Comment } from '../comment/comment.entity';
+import { Follow } from '../follow/follow.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -37,14 +38,15 @@ export class User extends BaseEntity {
   })
   comments: Comment[];
 
-  @ManyToMany(() => User, (user) => user.following, {
+  @OneToMany(() => Follow, (follow) => follow.follower, {
     nullable: true,
+    cascade: ['remove'],
   })
-  @JoinTable()
   followers: User[];
 
   @ManyToMany(() => User, (user) => user.followers, {
     nullable: true,
+    // cascade: true,
   })
-  following: User[];
+  followings: User[];
 }

@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -10,13 +11,17 @@ import { CreateUserDto } from './dtos/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { classToPlain } from 'class-transformer';
+import { Follow } from '../follow/follow.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly jwtService: JwtService,
     @InjectRepository(User) private readonly userRepo: Repository<User>,
+    @InjectRepository(Follow) private readonly followRepo: Repository<Follow>,
   ) {}
+
+  private readonly logger = new Logger(UserService.name);
 
   public generateToken(user: User): string {
     return this.jwtService.sign({
@@ -53,19 +58,12 @@ export class UserService {
   }
 
   async findAll() {
-    return this.userRepo.find({
-      relations: {
-        followers: true,
-      },
-    });
+    return this.userRepo.find({});
   }
 
   async findById(id: string) {
     return await this.userRepo.findOne({
       where: { id },
-      relations: {
-        followers: true,
-      },
     });
 
     // return this.userRepo.findOne(id, {
@@ -73,22 +71,64 @@ export class UserService {
     // });
   }
 
-  async subscribe(id: string, user: User) {
+  async subscribe(id: string, user: User): Promise<Follow> {
     const channel = await this.userRepo.findOne({
       where: { id },
-      relations: {
-        followers: true,
-      },
     });
-
     if (!channel) {
       throw new NotFoundException('User Not Found!');
     }
 
-    channel.followers = [...channel.followers, user];
+    const alreadyFollowed = await this.followRepo.findOne({
+      where: {
+        leaderId: id,
+        followerId: user.id,
+      },
+    });
 
-    const updatedChannel = await this.userRepo.save(channel);
+    if (alreadyFollowed) {
+      throw new BadRequestException('User Already followed!');
+    }
 
-    return !!updatedChannel;
+    const result = this.followRepo.create({
+      follower: user,
+      leader: channel,
+    });
+
+    return await this.followRepo.save(result);
+  }
+
+  async unSubscribe(id: string, user: User): Promise<SuccessStatus> {
+    const channel = await this.userRepo.findOne({
+      where: { id },
+    });
+    if (!channel) {
+      throw new NotFoundException('User Not Found!');
+    }
+
+    const alreadyFollowed = await this.followRepo.findOne({
+      where: {
+        leaderId: id,
+        followerId: user.id,
+      },
+    });
+
+    if (!alreadyFollowed) {
+      throw new BadRequestException('You are not following this user!');
+    }
+
+    await this.followRepo.remove(alreadyFollowed);
+
+    return {
+      message: 'user has unFollowed!',
+      status: 'successful',
+    };
+  }
+
+  async getFollowers(user: User): Promise<Follow[]> {
+    return await this.followRepo.find({
+      where: { followerId: user.id },
+      relations: ['leader'],
+    });
   }
 }
