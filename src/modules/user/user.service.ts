@@ -6,12 +6,15 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
-import { Repository } from 'typeorm';
+import { FindManyOptions, Repository } from 'typeorm';
 import { CreateUserDto } from './dtos/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { classToPlain } from 'class-transformer';
 import { Follow } from '../follow/follow.entity';
+import { Paginate } from 'src/shared/classes/paginate';
+import { PaginationDto } from 'src/shared/dtos/pagination.dto';
+import { OrderDto } from 'src/shared/dtos/order.dto';
 
 @Injectable()
 export class UserService {
@@ -125,10 +128,57 @@ export class UserService {
     };
   }
 
-  async getFollowers(user: User): Promise<Follow[]> {
-    return await this.followRepo.find({
-      where: { followerId: user.id },
-      relations: ['leader'],
-    });
+  async getFollowers(
+    user: User,
+    pagination: PaginationDto,
+    order: OrderDto,
+  ): Promise<[Follow[], number]> {
+    const options: FindManyOptions<Follow> = {};
+
+    options.where = {
+      leaderId: user.id,
+    };
+
+    if (order?.order) {
+      options.order = { [order.order]: order.orderBy };
+    } else {
+      options.order = { created_at: 'DESC' };
+    }
+
+    if (pagination) {
+      options.skip = pagination.skip;
+      options.take = pagination.size;
+    }
+
+    options.relations = ['follower'];
+
+    return this.followRepo.findAndCount(options);
+  }
+
+  async getFollowings(
+    user: User,
+    pagination: PaginationDto,
+    order: OrderDto,
+  ): Promise<[Follow[], number]> {
+    const options: FindManyOptions<Follow> = {};
+
+    options.where = {
+      followerId: user.id,
+    };
+
+    if (order?.order) {
+      options.order = { [order.order]: order.orderBy };
+    } else {
+      options.order = { created_at: 'DESC' };
+    }
+
+    if (pagination) {
+      options.skip = pagination.skip;
+      options.take = pagination.size;
+    }
+
+    options.relations = ['leader'];
+
+    return this.followRepo.findAndCount(options);
   }
 }
