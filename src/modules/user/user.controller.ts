@@ -11,6 +11,7 @@ import { PaginationDto } from 'src/shared/dtos/pagination.dto';
 import { QueryOrder } from 'src/shared/decorators/order-query';
 import { OrderDto } from 'src/shared/dtos/order.dto';
 import { Paginate } from 'src/shared/classes/paginate';
+import { LikePost } from '../like-post/like-post.entity';
 
 // @Serialize(OutputUserDto)
 @Controller('user')
@@ -77,5 +78,14 @@ export class UserController {
     );
 
     return new Paginate(items, pagination.getPagination(total));
+  }
+
+  @Post('like/:postId')
+  @UseGuards(JwtAuthGuard)
+  likePost(
+    @CurrentUser() user: User,
+    @Param('postId') postId: uuid,
+  ): Promise<LikePost | SuccessStatus> {
+    return this.userService.likePost(user, postId);
   }
 }

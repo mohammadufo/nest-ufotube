@@ -8,10 +8,12 @@ import { AuthController } from './auth.controller';
 import { LocalStrategy } from './local.strategy';
 import { JwtStrategy } from './jwt.strategy';
 import { Follow } from '../follow/follow.entity';
+import { LikePost } from '../like-post/like-post.entity';
+import { Video } from '../video/video.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Follow]),
+    TypeOrmModule.forFeature([User, Follow, LikePost, Video]),
     JwtModule.registerAsync({
       useFactory: () => ({
         secret: process.env.JWT_SECRET,

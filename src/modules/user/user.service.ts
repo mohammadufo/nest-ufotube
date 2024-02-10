@@ -15,6 +15,8 @@ import { Follow } from '../follow/follow.entity';
 import { Paginate } from 'src/shared/classes/paginate';
 import { PaginationDto } from 'src/shared/dtos/pagination.dto';
 import { OrderDto } from 'src/shared/dtos/order.dto';
+import { LikePost } from '../like-post/like-post.entity';
+import { Video } from '../video/video.entity';
 
 @Injectable()
 export class UserService {
@@ -22,6 +24,8 @@ export class UserService {
     private readonly jwtService: JwtService,
     @InjectRepository(User) private readonly userRepo: Repository<User>,
     @InjectRepository(Follow) private readonly followRepo: Repository<Follow>,
+    @InjectRepository(Video) private readonly videoRepo: Repository<Video>,
+    @InjectRepository(LikePost) private readonly likeRepo: Repository<LikePost>,
   ) {}
 
   private readonly logger = new Logger(UserService.name);
@@ -180,5 +184,39 @@ export class UserService {
     options.relations = ['leader'];
 
     return this.followRepo.findAndCount(options);
+  }
+
+  async likePost(user: User, postId: uuid): Promise<LikePost | SuccessStatus> {
+    const post = await this.videoRepo.findOne({
+      where: {
+        id: postId,
+      },
+    });
+
+    if (!post) {
+      throw new NotFoundException('post not found!');
+    }
+
+    const alreadyLiked = await this.likeRepo.findOne({
+      where: {
+        userId: user.id,
+        postId: post.id,
+      },
+    });
+
+    if (alreadyLiked) {
+      await this.likeRepo.remove(alreadyLiked);
+      return {
+        message: 'Like has been removed!',
+        status: 'successful',
+      };
+    }
+
+    const like = this.likeRepo.create({
+      post,
+      user,
+    });
+
+    return this.likeRepo.save(like);
   }
 }
