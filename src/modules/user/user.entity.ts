@@ -25,7 +25,6 @@ export class User extends BaseEntity {
   password: string;
 
   @IsString()
-  @IsNotEmpty()
   @Column({ nullable: true })
   profileImage: string;
 

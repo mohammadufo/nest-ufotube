@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Controller,
   Post,
   UploadedFile,
@@ -33,6 +34,9 @@ export class UploadController {
   @Post('cloud')
   @UseInterceptors(FileInterceptor('file'))
   async UploadForCloud(@UploadedFile() file: Express.Multer.File) {
+    if (!file.mimetype.startsWith('image')) {
+      throw new BadRequestException('Please upload just image!💀');
+    }
     return await this.cloudinaryService
       .uploadImage(file)
       .then((data) => {
