@@ -8,6 +8,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './modules/user/user.module';
 import { CommentModule } from './modules/comment/comment.module';
 import { FollowModule } from './modules/follow/follow.module';
+import { UploadModule } from './modules/upload/upload.module';
+import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
 import ormConfigProd from './config/orm.config.prod';
 
 @Module({
@@ -25,6 +27,8 @@ import ormConfigProd from './config/orm.config.prod';
     UserModule,
     CommentModule,
     FollowModule,
+    UploadModule,
+    CloudinaryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
