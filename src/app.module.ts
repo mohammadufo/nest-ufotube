@@ -10,6 +10,7 @@ import { CommentModule } from './modules/comment/comment.module';
 import { FollowModule } from './modules/follow/follow.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
+import { LikePostModule } from './modules/like-post/like-post.module';
 import ormConfigProd from './config/orm.config.prod';
 
 @Module({
@@ -29,6 +30,7 @@ import ormConfigProd from './config/orm.config.prod';
     FollowModule,
     UploadModule,
     CloudinaryModule,
+    LikePostModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -4,6 +4,7 @@ import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 import { Video } from '../video/video.entity';
 import { Comment } from '../comment/comment.entity';
 import { Follow } from '../follow/follow.entity';
+import { LikePost } from '../like-post/like-post.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -44,9 +45,12 @@ export class User extends BaseEntity {
   })
   followers: User[];
 
-  @ManyToMany(() => User, (user) => user.followers, {
+  @OneToMany(() => User, (user) => user.followers, {
     nullable: true,
     // cascade: true,
   })
   followings: User[];
+
+  @OneToMany(() => LikePost, (like) => like.user)
+  likes: LikePost[];
 }
