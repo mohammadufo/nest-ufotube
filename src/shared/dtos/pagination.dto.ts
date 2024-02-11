@@ -1,14 +1,17 @@
-import { IsNumber } from 'class-validator';
+import { IsNumber, IsPositive } from 'class-validator';
 import { Pagination } from '../classes/paginate';
+import { Type } from 'class-transformer';
 
 export class PaginationDto {
   constructor(obj?: Partial<PaginationDto>) {
     if (obj) Object.assign(this, obj);
   }
 
+  @IsPositive()
   @IsNumber()
   page = 0;
 
+  @IsPositive()
   @IsNumber()
   size = 100;
 
