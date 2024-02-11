@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like, FindManyOptions } from 'typeorm';
 import { Video } from './video.entity';
@@ -6,6 +10,7 @@ import { CreateVideoDto } from './dto/create-video.dto';
 import { FindAllDto } from './dto/find-all.dto';
 import { PaginationDto } from 'src/shared/dtos/pagination.dto';
 import { User } from '../user/user.entity';
+import { UpdateVideoDto } from './dto/update-video.dto';
 
 @Injectable()
 export class VideoService {
@@ -14,7 +19,7 @@ export class VideoService {
     @InjectRepository(User) private userRepo: Repository<User>,
   ) {}
 
-  async create(body: CreateVideoDto, user: User) {
+  async create(body: CreateVideoDto, user: User): Promise<Video> {
     const video = this.videoRepo.create(body);
     video.user = user;
 
@@ -51,7 +56,7 @@ export class VideoService {
     return this.videoRepo.findAndCount(options);
   }
 
-  async findById(id: string) {
+  async findById(id: string): Promise<Video> {
     return this.videoRepo.findOne({
       where: { id },
       relations: {
@@ -59,5 +64,26 @@ export class VideoService {
         comments: true,
       },
     });
+  }
+
+  async updateVideo(
+    user: User,
+    id: uuid,
+    body: UpdateVideoDto,
+  ): Promise<Video> {
+    const video = await this.videoRepo.preload({
+      id,
+      ...body,
+    });
+
+    if (!video) {
+      throw new NotFoundException('Can not find video with this Id!');
+    }
+
+    if (user.id !== video.userId) {
+      throw new BadRequestException('You can update only your videos!');
+    }
+
+    return this.videoRepo.save(video);
   }
 }
