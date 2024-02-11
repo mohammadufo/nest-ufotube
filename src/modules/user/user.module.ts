@@ -18,7 +18,7 @@ import { Video } from '../video/video.entity';
       useFactory: () => ({
         secret: process.env.JWT_SECRET,
         signOptions: {
-          expiresIn: '180m',
+          expiresIn: '7d',
         },
       }),
     }),

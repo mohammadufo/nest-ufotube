@@ -1,21 +1,20 @@
 import { registerAs } from '@nestjs/config';
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { Comment } from 'src/modules/comment/comment.entity';
-import { Follow } from 'src/modules/follow/follow.entity';
-import { LikePost } from 'src/modules/like-post/like-post.entity';
-import { User } from 'src/modules/user/user.entity';
-import { Video } from 'src/modules/video/video.entity';
+import { DataSource, DataSourceOptions } from 'typeorm';
+import { config as dotenvConfig } from 'dotenv';
 
-export default registerAs(
-  'orm.config',
-  (): TypeOrmModuleOptions => ({
-    type: 'postgres',
-    host: process.env.DB_HOST,
-    port: Number(process.env.DB_PORT),
-    username: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    entities: [Video, User, Comment, Follow, LikePost],
-    synchronize: true,
-  }),
-);
+dotenvConfig({ path: '.env' });
+
+const config = {
+  type: 'postgres',
+  host: process.env.DB_HOST,
+  port: Number(process.env.DB_PORT),
+  username: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  entities: ['dist/modules/**/*.entity{.ts,.js}'],
+  migrations: ['dist/migrations/*{.ts,.js}’]'],
+  synchronize: false,
+};
+
+export default registerAs('orm.config', () => config);
+export const connectionSource = new DataSource(config as DataSourceOptions);
