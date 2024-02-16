@@ -7,7 +7,9 @@ import { OrderDto } from 'src/shared/dtos/order.dto';
 import { Paginate } from 'src/shared/classes/paginate';
 import { Follow } from './follow.entity';
 import { GetWithPagination } from 'src/shared/decorators/get-with-pagination.decorator';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Follow')
 @Controller('/follow')
 export class FollowController {
   constructor(private readonly followService: FollowService) {}

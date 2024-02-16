@@ -12,8 +12,10 @@ import { QueryOrder } from 'src/shared/decorators/order-query';
 import { OrderDto } from 'src/shared/dtos/order.dto';
 import { Paginate } from 'src/shared/classes/paginate';
 import { LikePost } from '../like-post/like-post.entity';
+import { ApiTags } from '@nestjs/swagger';
 
 // @Serialize(OutputUserDto)
+@ApiTags('User')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}

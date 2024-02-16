@@ -6,7 +6,9 @@ import { LikePostService } from './like-post.service';
 import { QueryPagination } from 'src/shared/decorators/query-pagination.decorator';
 import { QueryOrder } from 'src/shared/decorators/order-query';
 import { Paginate } from 'src/shared/classes/paginate';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Like')
 @Controller('like')
 export class LikePostController {
   constructor(private readonly LikeService: LikePostService) {}
