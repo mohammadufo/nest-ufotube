@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { VideoModule } from './modules/video/video.module';
@@ -11,6 +11,7 @@ import { FollowModule } from './modules/follow/follow.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
 import { LikePostModule } from './modules/like-post/like-post.module';
+import { LoggingMiddleware } from './shared/middlewares/logging.middleware';
 
 @Module({
   imports: [
