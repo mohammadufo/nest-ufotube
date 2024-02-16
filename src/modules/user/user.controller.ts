@@ -21,7 +21,6 @@ export class UserController {
   @Get()
   @Serialize(OutputUserDto)
   async getAllUsers() {
-    await new Promise((resolve) => setTimeout(resolve, 5000));
     return this.userService.findAll();
   }
 
