@@ -20,6 +20,8 @@ export class CommentService {
   }
 
   async getAll() {
-    return this.commentRepo.find();
+    return this.commentRepo.find({
+      relations: ['author', 'video'],
+    });
   }
 }

@@ -20,10 +20,10 @@ import { CurrentUser } from 'src/shared/decorators/current-user.decorator';
 import { User } from '../user/user.entity';
 import { Video } from './video.entity';
 import { UpdateVideoDto } from './dto/update-video.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ControllerInfo } from 'src/shared/decorators/controller-info.decorator';
+import { Modules } from 'src/shared/enums/modules.enum';
 
-@ApiTags('Video')
-@Controller('video')
+@ControllerInfo(Modules.Video, 'video')
 export class VideoController {
   constructor(private readonly videoService: VideoService) {}
 

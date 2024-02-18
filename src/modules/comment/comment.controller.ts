@@ -1,13 +1,16 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Get, Post, UseGuards } from '@nestjs/common';
 import { CurrentUser } from 'src/shared/decorators/current-user.decorator';
 import { User } from '../user/user.entity';
 import { JwtAuthGuard } from 'src/shared/guards/jwt.guard';
 import { CreateCommentDto } from './dtos/create-comment.dto';
 import { CommentService } from './comment.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ControllerInfo } from 'src/shared/decorators/controller-info.decorator';
+import { Modules } from 'src/shared/enums/modules.enum';
+import { Serialize } from 'src/shared/interseptors/transformer.interceptor';
+import { OutputUserDto } from '../user/dtos/output-user.dto';
+import { OutputCommentDto } from './dtos/output-comment.dto';
 
-@ApiTags('Comment')
-@Controller('comment')
+@ControllerInfo(Modules.Comment, 'comment')
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
@@ -18,6 +21,7 @@ export class CommentController {
   }
 
   @Get()
+  @Serialize(OutputCommentDto)
   getAllComments() {
     return this.commentService.getAll();
   }
