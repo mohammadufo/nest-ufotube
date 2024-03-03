@@ -23,6 +23,7 @@ export class AuthenticationService {
       const user = new User();
       user.email = body.email;
       user.password = await this.hashingService.hash(body.password);
+      user.username = body.username;
 
       await this.userRepo.save(user);
     } catch (error) {

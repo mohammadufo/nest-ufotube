@@ -42,10 +42,6 @@ export class UserService {
   }
 
   async create(body: CreateUserDto) {
-    if (body.password !== body.confirmPassword) {
-      throw new BadRequestException('Passwords dose not match!');
-    }
-
     const existUser = await this.userRepo.findOne({
       where: [{ username: body?.username }, { email: body.email }],
     });
