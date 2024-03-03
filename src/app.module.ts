@@ -12,6 +12,7 @@ import { UploadModule } from './modules/upload/upload.module';
 import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
 import { LikePostModule } from './modules/like-post/like-post.module';
 import { LoggingMiddleware } from './shared/middlewares/logging.middleware';
+import { IamModule } from './modules/iam/iam.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { LoggingMiddleware } from './shared/middlewares/logging.middleware';
     UploadModule,
     CloudinaryModule,
     LikePostModule,
+    IamModule,
   ],
   controllers: [AppController],
   providers: [AppService],
